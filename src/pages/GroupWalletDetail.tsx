@@ -16,9 +16,9 @@ const GroupWalletDetail: React.FC = () => {
   const [showBalance, setShowBalance] = React.useState(true);
 
   const mockTransactions = [
-    { id: 1, type: 'incoming', amount: 500, description: '결제 내역 1', date: '2024-01-15', hash: 'tx1' },
-    { id: 2, type: 'outgoing', amount: 200, description: '결제 내역 2', date: '2024-01-14', hash: 'tx2' },
-    { id: 3, type: 'incoming', amount: 300, description: '결제 내역 3', date: '2024-01-13', hash: 'tx3' }
+    { id: 1, type: 'incoming', amount: 500, description: 'Payment History 1', date: '2025-09-20', hash: 'tx1' },
+    { id: 2, type: 'outgoing', amount: 200, description: 'Payment History 2', date: '2025-09-20', hash: 'tx2' },
+    { id: 3, type: 'incoming', amount: 300, description: 'Payment History 3', date: '2025-09-20', hash: 'tx3' }
   ];
 
   return (
@@ -31,7 +31,7 @@ const GroupWalletDetail: React.FC = () => {
         >
           <ArrowLeft className="w-5 h-5 text-gray-600" />
         </button>
-        <h1 className="text-lg font-bold text-gray-900">뒤로 가기</h1>
+        <h1 className="text-lg font-bold text-gray-900">Go Back</h1>
         <button 
           onClick={() => navigate('/group/settings')}
           className="p-2 hover:bg-gray-100 rounded-lg"
@@ -44,7 +44,7 @@ const GroupWalletDetail: React.FC = () => {
         {/* Wallet Balance */}
         <div className="bg-[#509AD6]/10 rounded-xl p-4">
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-lg font-semibold text-gray-900">월렛 이름1</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Wallet Name 1</h2>
             <button
               onClick={() => setShowBalance(!showBalance)}
               className="p-1"
@@ -57,13 +57,13 @@ const GroupWalletDetail: React.FC = () => {
             </button>
           </div>
           <div className="text-2xl font-bold text-[#509AD6]">
-            {showBalance ? '1,000 RLUSD' : '****'}
+            {showBalance ? '10 RLUSD' : '****'}
           </div>
         </div>
 
         {/* Transaction History */}
         <div className="bg-white rounded-xl p-4">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">결제 내역</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Payment History</h2>
           
           <div className="space-y-3">
             {mockTransactions.map((transaction) => (

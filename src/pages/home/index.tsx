@@ -59,7 +59,7 @@ const HomePage: React.FC = () => {
         {/* Balance Section */}
         <div className="bg-white rounded-xl p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-gray-600 text-sm">잔액 표시</span>
+            <span className="text-gray-600 text-sm">Balance Display</span>
             <button
               onClick={() => setShowBalance(!showBalance)}
               className="p-1"
@@ -79,7 +79,7 @@ const HomePage: React.FC = () => {
         {/* Group Wallet List */}
         <div className="bg-white rounded-xl p-4">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">그룹 월렛 리스트</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Group Wallet List</h2>
             <button
               onClick={() => navigate('/group/new')}
               className="w-8 h-8 bg-[#509AD6] rounded-lg flex items-center justify-center"
@@ -97,9 +97,9 @@ const HomePage: React.FC = () => {
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-gray-900 font-medium">월렛 이름{index}</div>
+                    <div className="text-gray-900 font-medium">Wallet Name {index}</div>
                     <div className="text-gray-600 text-sm">
-                      {showBalance ? `잔액: ${(1000 * index).toLocaleString()} RLUSD` : '****'}
+                      {showBalance ? `Balance: ${(10 * index).toLocaleString()} RLUSD` : '****'}
                     </div>
                   </div>
                   <ArrowUpRight className="w-5 h-5 text-gray-400" />
@@ -111,7 +111,7 @@ const HomePage: React.FC = () => {
 
         {/* Recent Transactions */}
         <div className="bg-white rounded-xl p-4">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">최근 거래내역</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Transactions</h2>
           <TransactionList
             transactions={dashboardData?.recentTransactions || []}
             isLoading={isLoading}
@@ -119,7 +119,7 @@ const HomePage: React.FC = () => {
             maxItems={5}
             showSearch={false}
             showFilter={false}
-            emptyMessage="거래 내역이 없습니다."
+            emptyMessage="No transaction history."
           />
         </div>
       </div>
