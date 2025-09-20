@@ -44,7 +44,7 @@ const GroupWalletDetail: React.FC = () => {
         {/* Wallet Balance */}
         <div className="bg-[#509AD6]/10 rounded-xl p-4">
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-lg font-semibold text-gray-900">Wallet Name 1</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Study Abroad Wallet</h2>
             <button
               onClick={() => setShowBalance(!showBalance)}
               className="p-1"

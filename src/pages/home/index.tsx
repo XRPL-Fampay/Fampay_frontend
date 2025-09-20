@@ -89,17 +89,21 @@ const HomePage: React.FC = () => {
           </div>
           
           <div className="space-y-3">
-            {[1, 2, 3].map((index) => (
+            {[
+              { id: 1, name: 'Charity Wallet', balance: 10 },
+              { id: 2, name: 'Study Abroad Wallet', balance: 20 },
+              { id: 3, name: 'Savings Group Wallet', balance: 30 }
+            ].map((wallet) => (
               <button
-                key={index}
-                onClick={() => navigate(`/group/detail/${index}`)}
+                key={wallet.id}
+                onClick={() => navigate(`/group/detail/${wallet.id}`)}
                 className="w-full bg-[#509AD6]/10 rounded-lg p-4 text-left hover:bg-[#509AD6]/20 transition-colors"
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-gray-900 font-medium">Wallet Name {index}</div>
+                    <div className="text-gray-900 font-medium">{wallet.name}</div>
                     <div className="text-gray-600 text-sm">
-                      {showBalance ? `Balance: ${(10 * index).toLocaleString()} RLUSD` : '****'}
+                      {showBalance ? `Balance: ${wallet.balance.toLocaleString()} RLUSD` : '****'}
                     </div>
                   </div>
                   <ArrowUpRight className="w-5 h-5 text-gray-400" />
@@ -139,7 +143,7 @@ const HomePage: React.FC = () => {
             <span className="text-sm font-medium">Payment</span>
           </button>
           <button 
-            onClick={() => navigate('/dues')}
+            onClick={() => navigate('/staking/new')}
             className="flex-1 flex flex-col items-center py-3 px-4 text-gray-500 hover:bg-gray-50"
           >
             <Globe className="w-5 h-5 mb-1" />

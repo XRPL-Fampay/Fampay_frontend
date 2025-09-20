@@ -6,8 +6,10 @@ import {
   Settings,
   Plus,
   Check,
-  X
+  X,
+  Loader2
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 const GroupWalletNew: React.FC = () => {
   const navigate = useNavigate();
@@ -16,6 +18,7 @@ const GroupWalletNew: React.FC = () => {
   const [members, setMembers] = React.useState([
     { id: 1, xrplAddress: '', invited: false }
   ]);
+  const [isCreating, setIsCreating] = React.useState(false);
 
   const handleAddMember = () => {
     const newId = Math.max(...members.map(m => m.id)) + 1;
@@ -38,9 +41,58 @@ const GroupWalletNew: React.FC = () => {
     ));
   };
 
-  const handleCreateWallet = () => {
-    console.log('Creating wallet:', { walletName, description, members });
-    navigate('/');
+  const handleCreateWallet = async () => {
+    if (!walletName.trim()) {
+      toast.error('Wallet name is required');
+      return;
+    }
+
+    // Validate member addresses
+    const validMembers = members.filter(m => m.xrplAddress.trim());
+    const memberAddresses = validMembers.map(m => m.xrplAddress.trim());
+
+    setIsCreating(true);
+    try {
+      const response = await fetch('/api/groups', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: walletName,
+          description: description.trim() || undefined,
+          memberAddresses: memberAddresses
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create group');
+      }
+
+      const group = await response.json();
+      
+      toast.success('Group wallet created successfully!');
+      
+      // Show credential results if available
+      if (group.memberCredentials && group.memberCredentials.length > 0) {
+        const successCount = group.memberCredentials.filter((c: any) => c.success).length;
+        const totalCount = group.memberCredentials.length;
+        
+        if (successCount === totalCount) {
+          toast.success(`Credentials issued to all ${totalCount} members`);
+        } else {
+          toast.warning(`Credentials issued to ${successCount}/${totalCount} members`);
+        }
+      }
+
+      // Navigate to group detail or home
+      navigate(`/group/detail/${group.id}`);
+    } catch (error) {
+      console.error('Error creating group:', error);
+      toast.error('Failed to create group wallet');
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   return (
@@ -186,10 +238,11 @@ const GroupWalletNew: React.FC = () => {
         <div className="max-w-md mx-auto">
           <button
             onClick={handleCreateWallet}
-            disabled={!walletName}
-            className="w-full bg-[#509AD6] text-white py-3 rounded-lg font-medium hover:bg-[#4A8BC2] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            disabled={!walletName || isCreating}
+            className="w-full bg-[#509AD6] text-white py-3 rounded-lg font-medium hover:bg-[#4A8BC2] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
           >
-            Create Wallet
+            {isCreating && <Loader2 className="w-4 h-4 animate-spin" />}
+            <span>{isCreating ? 'Creating...' : 'Create Wallet'}</span>
           </button>
         </div>
       </div>
