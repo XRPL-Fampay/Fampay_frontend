@@ -1,12 +1,17 @@
 # Frontend Todo List
 
 ## 1. 프로젝트 설정 (30분)
-- [ ] React 프로젝트 생성 (CRA or Vite)
-- [ ] 필요 패키지 설치
-  - [ ] axios or fetch API
-  - [ ] react-router-dom
-  - [ ] tailwindcss (모바일 UI)
-  - [ ] zustand or context (상태관리)
+- [x] React + TypeScript 프로젝트 생성 (Vite)
+- [x] 필요 패키지 설치
+  - [x] axios
+  - [x] react-router (v7)
+  - [x] tailwindcss (v4)
+  - [x] @tanstack/react-query (상태관리)
+  - [x] lucide-react (아이콘)
+  - [x] sonner (토스트)
+  - [x] next-themes (다크모드)
+  - [x] shadcn/ui 컴포넌트 (clsx, tailwind-merge, class-variance-authority)
+  - [ ] xrpl (XRPL SDK)
 - [ ] 모바일 반응형 레이아웃 설정
 
 ## 2. 라우팅 구조 (30분)
@@ -26,8 +31,8 @@
 - [ ] 멤버 관리 화면
 
 ### 예시 코드 - 그룹 생성
-```javascript
-// components/CreateGroup.jsx
+```typescript
+// components/CreateGroup.tsx
 import { useState } from 'react';
 import axios from 'axios';
 
@@ -109,8 +114,8 @@ function CreateGroup() {
 - [ ] 내 개인 잔액 표시
 
 ### 예시 코드 - 대시보드
-```javascript
-// components/Dashboard.jsx
+```typescript
+// components/Dashboard.tsx
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -198,8 +203,8 @@ function Dashboard() {
 - [ ] 스와이프 확인 제스처
 
 ### 예시 코드 - 회비 납부 화면
-```javascript
-// components/PayDues.jsx
+```typescript
+// components/PayDues.tsx
 import { useState } from 'react';
 import axios from 'axios';
 
@@ -345,8 +350,8 @@ function PayDues() {
 - [ ] 납부 히스토리
 
 ### 예시 코드 - 정기 회비 관리
-```javascript
-// components/DuesManager.jsx
+```typescript
+// components/DuesManager.tsx
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -422,9 +427,9 @@ function DuesManager() {
 - [ ] 트랜잭션 상태 표시
 
 ## 8. UI/UX 컴포넌트 (1시간)
-- [ ] 로딩 스피너
-- [ ] 토스트 메시지
-- [ ] 모달 컴포넌트
+- [ ] 로딩 스피너 (lucide-react 활용)
+- [ ] 토스트 메시지 (sonner 활용)
+- [ ] 모달 컴포넌트 (shadcn/ui Dialog)
 - [ ] 바텀 시트
 - [ ] 스와이프 제스처
 - [ ] 숫자 패드
@@ -436,7 +441,10 @@ function DuesManager() {
 - [ ] POST `/api/group/join`
 - [ ] GET `/api/group/info`
 
-### 지갑 관리
+### 지갑 관리 (XRPL 직접 연동)
+- [ ] XRPL Client 연결 (testnet)
+- [ ] 지갑 잔액 조회 (getXrpBalance)
+- [ ] 거래 내역 조회 (account_tx)
 - [ ] GET `/api/wallet/:address/balance`
 - [ ] GET `/api/wallet/:address/transactions`
 
@@ -451,6 +459,7 @@ function DuesManager() {
 - [ ] GET `/api/cashout/cards`
 
 ## 10. 상태 관리 (30분)
+- [ ] @tanstack/react-query로 서버 상태 관리
 - [ ] 유저 정보 (운영진/멤버 구분)
 - [ ] 그룹 정보
 - [ ] 지갑 주소 및 잔액
