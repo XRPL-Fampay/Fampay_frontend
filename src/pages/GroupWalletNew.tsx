@@ -14,12 +14,12 @@ const GroupWalletNew: React.FC = () => {
   const [walletName, setWalletName] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [members, setMembers] = React.useState([
-    { id: 1, email: '', name: '', invited: false }
+    { id: 1, xrplAddress: '', invited: false }
   ]);
 
   const handleAddMember = () => {
     const newId = Math.max(...members.map(m => m.id)) + 1;
-    setMembers([...members, { id: newId, email: '', name: '', invited: false }]);
+    setMembers([...members, { id: newId, xrplAddress: '', invited: false }]);
   };
 
   const handleRemoveMember = (id: number) => {
@@ -129,17 +129,10 @@ const GroupWalletNew: React.FC = () => {
                 
                 <div className="space-y-2">
                   <input
-                    type="email"
-                    placeholder="이메일 주소"
-                    value={member.email}
-                    onChange={(e) => handleMemberChange(member.id, 'email', e.target.value)}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#509AD6] focus:border-transparent"
-                  />
-                  <input
                     type="text"
-                    placeholder="이름"
-                    value={member.name}
-                    onChange={(e) => handleMemberChange(member.id, 'name', e.target.value)}
+                    placeholder="XRPL 주소 (예: rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH)"
+                    value={member.xrplAddress || ''}
+                    onChange={(e) => handleMemberChange(member.id, 'xrplAddress', e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#509AD6] focus:border-transparent"
                   />
                   
@@ -152,7 +145,7 @@ const GroupWalletNew: React.FC = () => {
                     ) : (
                       <button
                         onClick={() => handleInviteMember(member.id)}
-                        disabled={!member.email || !member.name}
+                        disabled={!member.xrplAddress}
                         className="px-3 py-1 text-sm bg-[#509AD6] text-white rounded hover:bg-[#4A8BC2] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                       >
                         초대하기
