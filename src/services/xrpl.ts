@@ -18,8 +18,8 @@ class XRPLService {
   private config: XRPLClientConfig;
 
   constructor(config: XRPLClientConfig = {
-    server: 'wss://s.devnet.rippletest.net:51233',
-    network: 'devnet'
+    server: import.meta.env.VITE_XRPL_SERVER || 'wss://s.altnet.rippletest.net:51233',
+    network: 'testnet'
   }) {
     this.config = config;
   }
@@ -343,8 +343,11 @@ class XRPLService {
   }
 }
 
-// Singleton 인스턴스 생성
-export const xrplService = new XRPLService();
+// Singleton 인스턴스 생성 - 환경변수에서 서버 URL 가져오기
+export const xrplService = new XRPLService({
+  server: import.meta.env.VITE_XRPL_SERVER || 'wss://s.altnet.rippletest.net:51233',
+  network: 'testnet'
+});
 
 // 기본 설정
 export const XRPL_CONFIG = {
@@ -353,10 +356,10 @@ export const XRPL_CONFIG = {
   MAINNET_SERVER: 'wss://xrplcluster.com'
 };
 
-// 기본 인스턴스는 DEVNET 사용
-export const devnetXrplService = new XRPLService({
-  server: XRPL_CONFIG.DEVNET_SERVER,
-  network: 'devnet'
+// Testnet 인스턴스
+export const testnetXrplService = new XRPLService({
+  server: import.meta.env.VITE_XRPL_SERVER || XRPL_CONFIG.TESTNET_SERVER,
+  network: 'testnet'
 });
 
 export default XRPLService;
