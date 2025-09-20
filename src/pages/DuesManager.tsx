@@ -21,6 +21,11 @@ import type { EscrowDetails } from '../types';
 export const DuesManager: React.FC = () => {
   const navigate = useNavigate();
   
+  // Redirect to new staking manager
+  React.useEffect(() => {
+    navigate('/staking', { replace: true });
+  }, [navigate]);
+
   const [dues, setDues] = React.useState<EscrowDetails[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [refreshing, setRefreshing] = React.useState(false);

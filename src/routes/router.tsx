@@ -9,8 +9,8 @@ import Landing from "../pages/Landing";
 import Dashboard from "../pages/Dashboard";
 import CreateGroup from "../pages/group/CreateGroup";
 import JoinGroup from "../pages/group/JoinGroup";
-import PayDues from "../pages/PayDues";
-import DuesManager from "../pages/DuesManager";
+import StakingManager from "../pages/StakingManager";
+import CreateStaking from "../pages/CreateStaking";
 import Cashout from "../pages/Cashout";
 import HomePage from "../pages/home";
 import GroupWalletList from "../pages/GroupWalletList";
@@ -95,12 +95,12 @@ export const router = createBrowserRouter([
     element: <GroupWalletNew />,
   },
   {
-    path: "/dues",
-    element: <PayDues />,
+    path: "/staking",
+    element: <StakingManager />,
   },
   {
-    path: "/escrow", 
-    element: <DuesManager />,
+    path: "/staking/new",
+    element: <CreateStaking />,
   },
   {
     path: "/cashout",

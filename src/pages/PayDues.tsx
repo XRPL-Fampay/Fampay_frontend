@@ -21,6 +21,12 @@ import type { PayDuesForm } from '../types';
 export const PayDues: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // Redirect to new staking creation page
+  React.useEffect(() => {
+    navigate('/staking/new', { replace: true });
+  }, [navigate]);
+
   const { balance, isLoading: balanceLoading } = useWalletBalance();
   const { currentGroup } = useGroup();
   
@@ -408,7 +414,7 @@ export const PayDues: React.FC = () => {
             </div>
           )}
 
-          {/* Current Balance Display */}
+          {/* Current Balance Display
           <div className="bg-gray-50 rounded-lg p-4">
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">현재 잔액</span>
@@ -416,7 +422,7 @@ export const PayDues: React.FC = () => {
                 {balanceLoading ? '로딩 중...' : `${balance.toFixed(6)} XRP`}
               </span>
             </div>
-          </div>
+          </div> */}
 
           {/* Submit Button */}
           <button

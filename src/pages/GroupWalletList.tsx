@@ -85,7 +85,7 @@ const GroupWalletList: React.FC = () => {
             className="flex-1 flex flex-col items-center py-3 px-4 text-gray-500 hover:bg-gray-50"
           >
             <Globe className="w-5 h-5 mb-1" />
-            <span className="text-sm font-medium">All</span>
+            <span className="text-sm font-medium">Staking</span>
           </button>
         </div>
       </div>
