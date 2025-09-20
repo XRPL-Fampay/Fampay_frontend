@@ -12,6 +12,7 @@ import {
 import { cn } from '../lib/utils';
 import { useWallet } from '../hooks/useWallet';
 import { useGroup } from '../hooks/useGroup';
+import WalletHeader from '../components/WalletHeader';
 
 export const Landing: React.FC = () => {
   const navigate = useNavigate();
@@ -82,6 +83,28 @@ export const Landing: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-400 via-blue-500 to-purple-600">
       <div className="max-w-md mx-auto bg-white min-h-screen flex flex-col">
+        {/* Header */}
+        <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+          <div className="px-4 py-3">
+            <div className="flex items-center justify-between">
+              {/* Left: Logo */}
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">GP</span>
+                </div>
+                <h1 className="font-bold text-gray-900">GroupPay</h1>
+              </div>
+
+              {/* Right: Wallet Header */}
+              <WalletHeader 
+                compact={true}
+                showBalance={true}
+                showNetworkStatus={true}
+              />
+            </div>
+          </div>
+        </header>
+
         {/* Hero Section */}
         <div className="bg-gradient-to-br from-green-500 to-blue-600 text-white px-6 py-12 text-center">
           <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-6">
