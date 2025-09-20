@@ -53,7 +53,7 @@ const GroupWalletNew: React.FC = () => {
         >
           <ArrowLeft className="w-5 h-5 text-gray-600" />
         </button>
-        <h1 className="text-lg font-bold text-gray-900">새 그룹 월렛</h1>
+        <h1 className="text-lg font-bold text-gray-900">New Group Wallet</h1>
         <div className="w-10"></div>
       </div>
 
@@ -62,31 +62,31 @@ const GroupWalletNew: React.FC = () => {
         <div className="bg-white rounded-xl p-4">
           <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
             <Settings className="w-5 h-5 text-[#509AD6]" />
-            <span>기본 설정</span>
+            <span>Basic Settings</span>
           </h2>
           
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                월렛 이름
+                Wallet Name
               </label>
               <input
                 type="text"
                 value={walletName}
                 onChange={(e) => setWalletName(e.target.value)}
-                placeholder="월렛 이름을 입력하세요"
+                placeholder="Enter wallet name"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#509AD6] focus:border-transparent"
               />
             </div>
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                설명 (선택사항)
+                Description (Optional)
               </label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="월렛에 대한 설명을 입력하세요"
+                placeholder="Enter wallet description"
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#509AD6] focus:border-transparent resize-none"
               />
@@ -99,14 +99,14 @@ const GroupWalletNew: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
               <Users className="w-5 h-5 text-[#509AD6]" />
-              <span>인원 관리</span>
+              <span>Member Management</span>
             </h2>
             <button
               onClick={handleAddMember}
               className="flex items-center space-x-1 bg-[#509AD6] text-white px-3 py-2 rounded-lg hover:bg-[#4A8BC2] transition-colors"
             >
               <Plus className="w-4 h-4" />
-              <span className="text-sm font-medium">추가</span>
+              <span className="text-sm font-medium">Add</span>
             </button>
           </div>
 
@@ -115,7 +115,7 @@ const GroupWalletNew: React.FC = () => {
               <div key={member.id} className="p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-sm font-medium text-gray-700">
-                    멤버 {index + 1}
+                    Member {index + 1}
                   </span>
                   {members.length > 1 && (
                     <button
@@ -130,7 +130,7 @@ const GroupWalletNew: React.FC = () => {
                 <div className="space-y-2">
                   <input
                     type="text"
-                    placeholder="XRPL 주소 (예: rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH)"
+                    placeholder="XRPL Address (e.g., rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH)"
                     value={member.xrplAddress || ''}
                     onChange={(e) => handleMemberChange(member.id, 'xrplAddress', e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#509AD6] focus:border-transparent"
@@ -140,7 +140,7 @@ const GroupWalletNew: React.FC = () => {
                     {member.invited ? (
                       <span className="flex items-center space-x-1 text-green-600 text-sm">
                         <Check className="w-4 h-4" />
-                        <span>초대됨</span>
+                        <span>Invited</span>
                       </span>
                     ) : (
                       <button
@@ -148,7 +148,7 @@ const GroupWalletNew: React.FC = () => {
                         disabled={!member.xrplAddress}
                         className="px-3 py-1 text-sm bg-[#509AD6] text-white rounded hover:bg-[#4A8BC2] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                       >
-                        초대하기
+                        Invite
                       </button>
                     )}
                   </div>
@@ -160,21 +160,21 @@ const GroupWalletNew: React.FC = () => {
 
         {/* Additional Settings */}
         <div className="bg-white rounded-xl p-4">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">기타 설정</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Additional Settings</h2>
           
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">자동 회비 설정</span>
+              <span className="text-gray-700">Auto Dues Setting</span>
               <input type="checkbox" className="rounded text-[#509AD6] focus:ring-[#509AD6]" />
             </div>
             
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">알림 활성화</span>
+              <span className="text-gray-700">Enable Notifications</span>
               <input type="checkbox" className="rounded text-[#509AD6] focus:ring-[#509AD6]" defaultChecked />
             </div>
             
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">공개 월렛</span>
+              <span className="text-gray-700">Public Wallet</span>
               <input type="checkbox" className="rounded text-[#509AD6] focus:ring-[#509AD6]" />
             </div>
           </div>
@@ -189,7 +189,7 @@ const GroupWalletNew: React.FC = () => {
             disabled={!walletName}
             className="w-full bg-[#509AD6] text-white py-3 rounded-lg font-medium hover:bg-[#4A8BC2] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
           >
-            월렛 생성하기
+            Create Wallet
           </button>
         </div>
       </div>
