@@ -12,6 +12,11 @@ import JoinGroup from "../pages/group/JoinGroup";
 import PayDues from "../pages/PayDues";
 import DuesManager from "../pages/DuesManager";
 import Cashout from "../pages/Cashout";
+import HomePage from "../pages/home";
+import GroupWalletList from "../pages/GroupWalletList";
+import GroupWalletDetail from "../pages/GroupWalletDetail";
+import GroupWalletSettings from "../pages/GroupWalletSettings";
+import GroupWalletNew from "../pages/GroupWalletNew";
 
 // Lazy loaded pages
 const NotFound = lazy(() => import("../pages/not-found"));
@@ -25,24 +30,13 @@ const LoadingSpinner = () => (
 
 // Protected route wrapper
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  // Check if user has wallet and is in group
-  const hasWallet = localStorage.getItem('grouppay_wallet');
-  const hasGroup = localStorage.getItem('grouppay_group_id');
-  
-  if (!hasWallet) {
-    return <Navigate to="/" replace />;
-  }
-  
-  if (!hasGroup && window.location.pathname !== '/group/create' && window.location.pathname !== '/group/join') {
-    return <Navigate to="/group/create" replace />;
-  }
-  
+  // For demo purposes, skip auth checks and go directly to home
   return <>{children}</>;
 };
 
 export const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/landing",
     element: <Landing />,
   },
   {
@@ -60,6 +54,10 @@ export const router = createBrowserRouter([
   },
   {
     path: "/",
+    element: <HomePage />,
+  },
+  {
+    path: "/app",
     element: (
       <ProtectedRoute>
         <MainLayout />
@@ -67,22 +65,46 @@ export const router = createBrowserRouter([
     ),
     children: [
       {
+        path: "home",
+        element: <HomePage />,
+      },
+      {
         path: "dashboard",
         element: <Dashboard />,
       },
-      {
-        path: "dues",
-        element: <PayDues />,
-      },
-      {
-        path: "escrow",
-        element: <DuesManager />,
-      },
-      {
-        path: "cashout",
-        element: <Cashout />,
-      },
     ],
+  },
+  {
+    path: "/group/list",
+    element: <GroupWalletList />,
+  },
+  {
+    path: "/group/detail",
+    element: <GroupWalletDetail />,
+  },
+  {
+    path: "/group/detail/:id", 
+    element: <GroupWalletDetail />,
+  },
+  {
+    path: "/group/settings",
+    element: <GroupWalletSettings />,
+  },
+  {
+    path: "/group/new",
+    element: <GroupWalletNew />,
+  },
+  {
+    path: "/dues",
+    element: <PayDues />,
+  },
+  {
+    path: "/escrow", 
+    element: <DuesManager />,
+  },
+  {
+    path: "/cashout",
+    element: <Cashout />,
   },
   {
     path: "*",
