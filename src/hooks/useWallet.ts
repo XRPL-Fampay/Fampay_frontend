@@ -90,19 +90,25 @@ export const useWalletBalance = (address?: string) => {
   const walletAddress = address || globalWallet?.address || import.meta.env.VITE_WALLET_ADDRESS;
   
   const balanceQuery = useXRPLBalance(walletAddress);
+  console.log('Fetching balance for address:', balanceQuery.data);
 
   const refreshBalance = useCallback(async () => {
     if (!walletAddress) return;
     
     try {
-      await balanceQuery.refetch();
+      const balance = await balanceQuery.refetch();
+      // 응답 출력
+      console.log(`Balance for ${walletAddress}:`, balance.data);
     } catch (error) {
       console.error('Failed to refresh balance:', error);
     }
   }, [walletAddress, balanceQuery]);
 
+  // RLUSD 잔액 가져오기 (index 1)
+  const rlusdBalance = balanceQuery.data?.[1]?.value ? parseFloat(balanceQuery.data[1].value) : 0;
+  
   return {
-    balance: balanceQuery.data?.[0]?.value ? parseFloat(balanceQuery.data[0].value) : 0,
+    balance: rlusdBalance, // RLUSD 잔액 사용
     isLoading: balanceQuery.isLoading,
     error: balanceQuery.error,
     refreshBalance,
@@ -122,7 +128,8 @@ export const useWalletInfo = (address?: string) => {
       if (!walletAddress) throw new Error('Wallet address not found');
       const accountInfo = await xrplService.getAccountInfo(walletAddress);
       const balanceData = await xrplService.getBalance(walletAddress);
-      const balance = parseFloat(balanceData[0]?.value || '0');
+      // RLUSD 잔액 가져오기 (index 1)
+      const balance = parseFloat(balanceData[1]?.value || '0');
       
       return {
         address: accountInfo.account,
