@@ -1,42 +1,54 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import WalletService from '../services/walletService';
-import { useXRPLBalance, useXRPLTransactions } from './useXRPL';
-import type { XRPLWallet, WalletInfo, Transaction } from '../types';
+import { Wallet, isValidAddress } from 'xrpl';
+import { xrplService } from '../services/xrpl';
+import { useXRPLBalance } from './useXRPL';
+import type { WalletInfo, Transaction } from '../types';
 
 /**
  * 지갑 상태 관리 훅
  */
 export const useWallet = () => {
-  const [wallet, setWallet] = useState<XRPLWallet | null>(null);
+  const [wallet, setWallet] = useState<Wallet | null>(null);
   const [isConnected, setIsConnected] = useState(false);
 
-  // 저장된 지갑 로드
+  // 환경 변수에서 지갑 시드 로드
   useEffect(() => {
-    const savedWallet = WalletService.loadWalletFromStorage();
-    if (savedWallet) {
-      setWallet(savedWallet);
-      setIsConnected(true);
+    const walletSeed = import.meta.env.VITE_WALLET_SEED;
+    if (walletSeed) {
+      try {
+        const seedWallet = Wallet.fromSeed(walletSeed);
+        setWallet(seedWallet);
+        setIsConnected(true);
+        setGlobalWallet(seedWallet);
+      } catch (error) {
+        console.error('Failed to load wallet from seed:', error);
+      }
     }
   }, []);
 
   // 새 지갑 생성
   const createWallet = useMutation({
     mutationFn: async () => {
-      return await WalletService.createWallet();
+      const newWallet = Wallet.generate();
+      console.log('New wallet created:', newWallet.address);
+      console.log('Save this seed to .env as VITE_WALLET_SEED:', newWallet.seed);
+      return newWallet;
     },
     onSuccess: (newWallet) => {
       setWallet(newWallet);
       setIsConnected(true);
+      setGlobalWallet(newWallet);
     },
   });
 
   // 시드로 지갑 복구
   const restoreWallet = useCallback((seed: string) => {
     try {
-      const restoredWallet = WalletService.restoreWalletFromSeed(seed);
+      const restoredWallet = Wallet.fromSeed(seed);
       setWallet(restoredWallet);
       setIsConnected(true);
+      setGlobalWallet(restoredWallet);
       return restoredWallet;
     } catch (error) {
       console.error('Failed to restore wallet:', error);
@@ -46,9 +58,9 @@ export const useWallet = () => {
 
   // 지갑 연결 해제
   const disconnectWallet = useCallback(() => {
-    WalletService.disconnectWallet();
     setWallet(null);
     setIsConnected(false);
+    setGlobalWallet(null);
   }, []);
 
   return {
@@ -65,8 +77,17 @@ export const useWallet = () => {
 /**
  * 지갑 잔액 관리 훅
  */
+// Global wallet instance for sharing across hooks
+let globalWallet: Wallet | null = null;
+
+export const setGlobalWallet = (wallet: Wallet | null) => {
+  globalWallet = wallet;
+};
+
+export const getGlobalWallet = () => globalWallet;
+
 export const useWalletBalance = (address?: string) => {
-  const walletAddress = address || WalletService.getCurrentWalletAddress();
+  const walletAddress = address || globalWallet?.address || import.meta.env.VITE_WALLET_ADDRESS;
   
   const balanceQuery = useXRPLBalance(walletAddress);
 
@@ -81,11 +102,11 @@ export const useWalletBalance = (address?: string) => {
   }, [walletAddress, balanceQuery]);
 
   return {
-    balance: balanceQuery.data?.balance || 0,
+    balance: balanceQuery.data?.[0]?.value ? parseFloat(balanceQuery.data[0].value) : 0,
     isLoading: balanceQuery.isLoading,
     error: balanceQuery.error,
     refreshBalance,
-    lastUpdated: balanceQuery.data?.lastUpdated
+    lastUpdated: new Date().toISOString()
   };
 };
 
@@ -93,13 +114,21 @@ export const useWalletBalance = (address?: string) => {
  * 지갑 정보 조회 훅
  */
 export const useWalletInfo = (address?: string) => {
-  const walletAddress = address || WalletService.getCurrentWalletAddress();
+  const walletAddress = address || globalWallet?.address || import.meta.env.VITE_WALLET_ADDRESS;
 
   return useQuery<WalletInfo, Error>({
     queryKey: ['wallet-info', walletAddress],
     queryFn: async () => {
       if (!walletAddress) throw new Error('Wallet address not found');
-      return await WalletService.getWalletInfo(walletAddress);
+      const accountInfo = await xrplService.getAccountInfo(walletAddress);
+      const balanceData = await xrplService.getBalance(walletAddress);
+      const balance = parseFloat(balanceData[0]?.value || '0');
+      
+      return {
+        address: accountInfo.account,
+        balance,
+        sequence: accountInfo.sequence
+      };
     },
     enabled: !!walletAddress,
     staleTime: 30000, // 30초간 캐시 유지
@@ -111,7 +140,7 @@ export const useWalletInfo = (address?: string) => {
  */
 export const useSendXRP = () => {
   const queryClient = useQueryClient();
-  const walletAddress = WalletService.getCurrentWalletAddress();
+  const walletAddress = globalWallet?.address || import.meta.env.VITE_WALLET_ADDRESS;
 
   return useMutation({
     mutationFn: async ({ 
@@ -123,7 +152,18 @@ export const useSendXRP = () => {
       amount: number; 
       memo?: string;
     }) => {
-      return await WalletService.sendXRP(toAddress, amount, memo);
+      if (!globalWallet && !import.meta.env.VITE_WALLET_SEED) {
+        throw new Error('Wallet not connected');
+      }
+      const walletSeed = import.meta.env.VITE_WALLET_SEED;
+      const fromAddress = globalWallet?.address || import.meta.env.VITE_WALLET_ADDRESS;
+      
+      return await xrplService.sendXRP({
+        fromAddress,
+        toAddress,
+        amount,
+        memo
+      }, walletSeed);
     },
     onSuccess: () => {
       // 송금 성공 시 관련 쿼리 무효화
@@ -138,13 +178,43 @@ export const useSendXRP = () => {
  * 거래 내역 관리 훅
  */
 export const useWalletTransactions = (address?: string, limit: number = 20) => {
-  const walletAddress = address || WalletService.getCurrentWalletAddress();
+  const walletAddress = address || globalWallet?.address || import.meta.env.VITE_WALLET_ADDRESS;
 
   const transactionsQuery = useQuery<Transaction[], Error>({
     queryKey: ['wallet-transactions', walletAddress, limit],
     queryFn: async () => {
       if (!walletAddress) throw new Error('Wallet address not found');
-      return await WalletService.getTransactionHistory(walletAddress, limit);
+      const history = await xrplService.getTransactionHistory(walletAddress, limit);
+      
+      return history.transactions.map((tx: any) => {
+        const transaction = tx.transaction;
+        
+        let type: Transaction['type'] = 'received';
+        if (transaction.Account === walletAddress) {
+          type = 'sent';
+        }
+        
+        const memo = transaction.Memos?.[0]?.Memo?.MemoData 
+          ? Buffer.from(transaction.Memos[0].Memo.MemoData, 'hex').toString('utf-8')
+          : undefined;
+          
+        if (memo?.includes('dues')) {
+          type = 'dues';
+        } else if (memo?.includes('expense')) {
+          type = 'expense';
+        }
+        
+        return {
+          hash: transaction.hash || tx.hash,
+          type,
+          amount: parseFloat(transaction.Amount) / 1000000,
+          from: transaction.Account,
+          to: transaction.Destination || '',
+          memo,
+          timestamp: new Date(transaction.date * 1000 + 946684800000).toISOString(),
+          status: tx.validated ? 'confirmed' : 'pending'
+        } as Transaction;
+      });
     },
     enabled: !!walletAddress,
     staleTime: 30000, // 30초간 캐시 유지
@@ -185,14 +255,14 @@ export const useWalletTransactions = (address?: string, limit: number = 20) => {
  */
 export const useFundWallet = () => {
   const queryClient = useQueryClient();
-  const walletAddress = WalletService.getCurrentWalletAddress();
+  const walletAddress = globalWallet?.address || import.meta.env.VITE_WALLET_ADDRESS;
 
   return useMutation({
     mutationFn: async (address?: string) => {
       const targetAddress = address || walletAddress;
       if (!targetAddress) throw new Error('Wallet address not found');
       
-      return await WalletService.fundFromFaucet(targetAddress);
+      return await xrplService.fundWallet(targetAddress);
     },
     onSuccess: (data, address) => {
       const targetAddress = address || walletAddress;
@@ -209,7 +279,7 @@ export const useFundWallet = () => {
  */
 export const useAddressValidation = () => {
   const validateAddress = useCallback((address: string): boolean => {
-    return WalletService.isValidAddress(address);
+    return isValidAddress(address);
   }, []);
 
   const validateAddressWithFeedback = useCallback((address: string): {
@@ -279,8 +349,8 @@ export const useWalletSecurity = () => {
   const checkSecurity = useCallback(() => {
     const checks = {
       hasWallet: !!wallet,
-      hasValidAddress: wallet ? WalletService.isValidAddress(wallet.address) : false,
-      isStoredSecurely: !!localStorage.getItem('grouppay_wallet_seed'), // 임시 체크
+      hasValidAddress: wallet ? isValidAddress(wallet.address) : false,
+      isStoredSecurely: !!import.meta.env.VITE_WALLET_SEED, // 환경 변수 체크
     };
 
     const securityScore = Object.values(checks).filter(Boolean).length;
@@ -316,8 +386,8 @@ export const useWalletConnection = () => {
 
   useEffect(() => {
     const checkConnection = () => {
-      const connected = WalletService.isWalletConnected();
-      const currentAddress = WalletService.getCurrentWalletAddress();
+      const connected = !!globalWallet || !!import.meta.env.VITE_WALLET_SEED;
+      const currentAddress = globalWallet?.address || import.meta.env.VITE_WALLET_ADDRESS || null;
       
       setIsConnected(connected);
       setAddress(currentAddress);
@@ -334,6 +404,6 @@ export const useWalletConnection = () => {
   return {
     isConnected,
     address,
-    checkConnection: () => WalletService.isWalletConnected()
+    checkConnection: () => !!globalWallet || !!import.meta.env.VITE_WALLET_SEED
   };
 };

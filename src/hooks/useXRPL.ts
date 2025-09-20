@@ -8,6 +8,7 @@ import type {
   XRPLTransactionHistory,
   XRPLPaymentParams 
 } from '../types/xrpl';
+import type { Balance } from 'xrpl';
 
 /**
  * XRPL 연결 상태 관리 훅
@@ -65,7 +66,7 @@ export const useXRPLConnection = () => {
  * 지갑 잔액 조회 훅
  */
 export const useXRPLBalance = (address: string | null, enabled: boolean = true) => {
-  return useQuery<XRPLBalanceInfo, Error>({
+  return useQuery<Balance[], Error>({
     queryKey: ['xrpl-balance', address],
     queryFn: async () => {
       if (!address) throw new Error('Address is required');
@@ -245,7 +246,7 @@ export const useXRPLWalletData = (address: string | null, enabled: boolean = tru
  */
 export const useRealtimeBalance = (
   address: string | null,
-  onBalanceChange?: (balance: number) => void
+  onBalanceChange?: (balance: string) => void
 ) => {
   const [isPolling, setIsPolling] = useState(false);
   const { data: balanceInfo, refetch } = useXRPLBalance(address, !!address);
@@ -257,8 +258,8 @@ export const useRealtimeBalance = (
     const interval = setInterval(async () => {
       try {
         const result = await refetch();
-        if (result.data && onBalanceChange) {
-          onBalanceChange(result.data.balance);
+        if (result.data && result.data[0] && onBalanceChange) {
+          onBalanceChange(result.data[0].value);
         }
       } catch (error) {
         console.error('Balance polling error:', error);
@@ -276,13 +277,13 @@ export const useRealtimeBalance = (
   }, []);
 
   useEffect(() => {
-    if (balanceInfo && onBalanceChange) {
-      onBalanceChange(balanceInfo.balance);
+    if (balanceInfo && balanceInfo[0] && onBalanceChange) {
+      onBalanceChange(balanceInfo[0].value);
     }
   }, [balanceInfo, onBalanceChange]);
 
   return {
-    balance: balanceInfo?.balance || 0,
+    balance: balanceInfo?.[0]?.value || '0',
     isPolling,
     startPolling,
     stopPolling

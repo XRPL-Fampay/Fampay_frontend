@@ -82,3 +82,11 @@
 - 실제 PG/VAN 연동
 - 모바일 앱 개발
 - KYC/AML 통합
+
+
+### 유저 플로우
+1. 홈(내 잔액, 그룹 지갑 리스트, 지갑 history)
+2. group wallet list (리스트 목록)
+3. group wallet detail (그룹 지갑 잔액, 그룹 지갑 history, 그룹지갑 setting)
+4. group wallet setting (인원 관리)'
+5. groul wallet new (인원 관리, 기타 설정)

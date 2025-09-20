@@ -11,6 +11,7 @@ import type {
   XRPLConnectionStatus,
   XRPLTransactionResponse
 } from '../types/xrpl';
+import type { Balance } from 'xrpl';
 
 class XRPLService {
   private client: Client | null = null;
@@ -160,7 +161,7 @@ class XRPLService {
   /**
    * XRP 잔액 조회 (XRPL 4.3.0 방식)
    */
-  async getBalance(address: string): Promise<XRPLBalanceInfo> {
+  async getBalance(address: string): Promise<Balance[]> {
     try {
       await this.connect();
       
@@ -168,14 +169,9 @@ class XRPLService {
         throw new Error('XRPL client not connected');
       }
 
-      const balanceInXRP = await this.client.getXrpBalance(address);
+      const balanceInXRP = await this.client.getBalances(address);
 
-      return {
-        address,
-        balance: typeof balanceInXRP === 'string' ? parseFloat(balanceInXRP) : balanceInXRP,
-        currency: 'XRP',
-        lastUpdated: new Date().toISOString()
-      };
+      return balanceInXRP;
     } catch (error) {
       console.error('Failed to get balance:', error);
       throw new Error(`Balance retrieval failed: ${error}`);

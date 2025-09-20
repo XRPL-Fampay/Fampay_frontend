@@ -1,5 +1,5 @@
 import { xrplService } from './xrpl';
-import type { WalletInfo, XRPLBalanceInfo, Transaction } from '../types';
+import type { WalletInfo, Transaction } from '../types';
 import type { XRPLWallet, XRPLTransactionHistory } from '../types/xrpl';
 
 export class WalletService {
@@ -97,7 +97,8 @@ export class WalletService {
   static async getBalance(address: string): Promise<number> {
     try {
       const balanceInfo = await xrplService.getBalance(address);
-      return balanceInfo.balance;
+      console.log('balanceInfo:', balanceInfo);
+      return parseFloat(balanceInfo[0]?.value || '0');
     } catch (error) {
       console.error('Failed to get balance:', error);
       throw new Error('잔액 조회에 실패했습니다.');
